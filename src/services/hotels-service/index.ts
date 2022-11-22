@@ -10,8 +10,17 @@ async function getHotels() {
   return hotelData;
 }
 
+async function getHotelRooms(hotelId: number) {
+  if(isNaN(hotelId)) {
+    throw notFoundError();
+  }
+  const roomData = await hotelRepository.findHotelRooms(hotelId);
+  return roomData;
+}
+
 const hotelService = {
-  getHotels
+  getHotels,
+  getHotelRooms
 };
 
 export default hotelService;
