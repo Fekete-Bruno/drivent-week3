@@ -154,8 +154,9 @@ describe("GET /hotels/:hotelId", () => {
     it("should respond with status 403 when user doesnt have an enrollment yet", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-    
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+      const hotel = await createHotel();
+
+      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -166,8 +167,9 @@ describe("GET /hotels/:hotelId", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketType();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
-            
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+      const hotel = await createHotel();
+
+      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -179,8 +181,9 @@ describe("GET /hotels/:hotelId", () => {
       const ticketType = await createTicketType();
       ticketType.isRemote = true;
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-            
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+      const hotel = await createHotel();
+
+      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -192,8 +195,9 @@ describe("GET /hotels/:hotelId", () => {
       const ticketType = await createTicketType();
       ticketType.includesHotel = false;
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-            
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+      const hotel = await createHotel();
+
+      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -207,7 +211,6 @@ describe("GET /hotels/:hotelId", () => {
       ticketType.includesHotel = true;
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
-      
       const room = await createRoom(hotel.id);
       
       const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
