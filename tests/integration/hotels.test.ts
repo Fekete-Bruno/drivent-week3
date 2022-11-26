@@ -2,7 +2,7 @@ import app, { init } from "@/app";
 import faker from "@faker-js/faker";
 import httpStatus from "http-status";
 import supertest from "supertest";
-import { createEnrollmentWithAddress, createPayment, createTicket, createTicketType, createUser } from "../factories";
+import { createEnrollmentWithAddress, createTicket, createTicketType, createTycketTypeSetParams, createUser } from "../factories";
 import * as jwt from "jsonwebtoken";
 import { cleanDb, generateValidToken } from "../helpers";
 import { TicketStatus } from "@prisma/client";
@@ -68,8 +68,7 @@ describe("GET /hotels", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      ticketType.isRemote = true;
+      const ticketType = await createTycketTypeSetParams(true, false);
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
             
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
@@ -81,8 +80,7 @@ describe("GET /hotels", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      ticketType.includesHotel = false;
+      const ticketType = await createTycketTypeSetParams(false, false);
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
             
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
@@ -94,9 +92,7 @@ describe("GET /hotels", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      ticketType.isRemote = false;
-      ticketType.includesHotel = true;
+      const ticketType = await createTycketTypeSetParams(false, true);
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
@@ -155,6 +151,7 @@ describe("GET /hotels/:hotelId", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const hotel = await createHotel();
+      const room = await createRoom(hotel.id);
 
       const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
@@ -168,6 +165,7 @@ describe("GET /hotels/:hotelId", () => {
       const ticketType = await createTicketType();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
       const hotel = await createHotel();
+      const room = await createRoom(hotel.id);
 
       const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
@@ -178,10 +176,10 @@ describe("GET /hotels/:hotelId", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      ticketType.isRemote = true;
+      const ticketType = await createTycketTypeSetParams(true, false);
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
+      const room = await createRoom(hotel.id);
 
       const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
@@ -192,10 +190,10 @@ describe("GET /hotels/:hotelId", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      ticketType.includesHotel = false;
+      const ticketType = await createTycketTypeSetParams(false, false);
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
+      const room = await createRoom(hotel.id);
 
       const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
 
@@ -206,9 +204,7 @@ describe("GET /hotels/:hotelId", () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketType();
-      ticketType.isRemote = false;
-      ticketType.includesHotel = true;
+      const ticketType = await createTycketTypeSetParams(false, true);
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
