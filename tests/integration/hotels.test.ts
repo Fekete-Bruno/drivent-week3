@@ -143,7 +143,7 @@ describe("GET /hotels/:hotelId", () => {
 
     it("should respond with status 404 when given hotelId doesnt exist", async () => {
       const token = await generateValidToken();
-      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      const response = await server.get("/hotels/0").set("Authorization", `Bearer ${token}`);
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 
@@ -153,7 +153,7 @@ describe("GET /hotels/:hotelId", () => {
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
 
-      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -167,7 +167,7 @@ describe("GET /hotels/:hotelId", () => {
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
 
-      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -181,7 +181,7 @@ describe("GET /hotels/:hotelId", () => {
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
 
-      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -195,7 +195,7 @@ describe("GET /hotels/:hotelId", () => {
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
 
-      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
@@ -209,7 +209,7 @@ describe("GET /hotels/:hotelId", () => {
       const hotel = await createHotel();
       const room = await createRoom(hotel.id);
       
-      const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      const response = await server.get(`/hotels/${hotel.id}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.OK);
       expect(response.body).toEqual([{
@@ -217,9 +217,15 @@ describe("GET /hotels/:hotelId", () => {
         name: room.name,
         capacity: room.capacity,
         hotelId: room.hotelId,
-        createdAt: room.createdAt,
-        updatedAt: room.updatedAt,
-        Hotel: hotel
+        createdAt: room.createdAt.toISOString(),
+        updatedAt: room.updatedAt.toISOString(),
+        Hotel: {  
+          id: hotel.id,
+          name: hotel.name,
+          image: hotel.image,
+          createdAt: hotel.createdAt.toISOString(),
+          updatedAt: hotel.updatedAt.toISOString()
+        }
       }]);
     });
   });
